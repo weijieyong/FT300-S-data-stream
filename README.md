@@ -38,13 +38,32 @@ uv run ft300s-stream.py -p /dev/ttyUSB0
 # 1. Install uv (system or venv)
 pip install uv
 
-# 2. (Optional) grant USB access
+# 2. Grant USB access (with your device path)
 sudo chmod 666 /dev/ttyUSB0
 
 # 3. Run streaming script directly
 uv run ft300s-stream.py -p /dev/ttyUSB0
 ```
 
+## Others
+
+<figure align="center">
+  <img src="docs/axis.png" alt="Axis Diagram" width="400" />
+  <figcaption><em>Axis orientation diagram.</em></figcaption>
+</figure>
+
+
+sample output of stream data from the FT 300-S at 100Hz. 
+```
+F: 99Hz - force Vector: [-0.16, 0.02, -0.38, 0.01, 0.01, -0.0]
+F: 99Hz - force Vector: [-0.12, -0.04, -0.46, 0.01, 0.01, -0.0]
+F: 99Hz - force Vector: [-0.09, -0.04, -0.48, 0.0, 0.01, -0.0]
+F: 100Hz - force Vector: [-0.08, -0.07, -0.38, 0.01, 0.01, -0.0]
+F: 99Hz - force Vector: [-0.09, -0.08, -0.38, 0.01, 0.01, -0.0]
+F: 99Hz - force Vector: [-0.13, -0.02, -0.43, 0.01, 0.01, -0.0]
+F: 100Hz - force Vector: [-0.14, -0.01, -0.42, 0.01, 0.01, -0.0]
+F: 99Hz - force Vector: [-0.11, -0.06, -0.43, 0.01, 0.01, -0.0]
+```
 
 ## Credits
 
