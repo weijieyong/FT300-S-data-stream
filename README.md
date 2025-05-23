@@ -32,6 +32,10 @@ docker run --rm -it --device /dev/ttyUSB0:/dev/ttyUSB0 uv-env
 uv run ft300s-stream.py -p /dev/ttyUSB0
 ```
 
+> [!NOTE]
+> **What is uv?**   
+> [uv](https://github.com/astral-sh/uv) is a fast Python package and project manager (similar to pip but faster). It automatically handles dependencies and virtual environments for you.
+
 ### Method 2: Local uv install
 
 ```bash
