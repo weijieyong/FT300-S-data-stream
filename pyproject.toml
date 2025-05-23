@@ -1,0 +1,11 @@
+[project]
+name = "FT300-S-stream"
+version = "0.1.0"
+description = "Get measurement data from FT 300-S in stream mode using python"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "libscrc>=1.8.1",
+    "minimalmodbus>=2.1.1",
+    "pyserial>=3.5",
+]
