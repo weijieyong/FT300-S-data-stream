@@ -11,9 +11,9 @@ from ft300s.logger import FT300DataLogger
 __version__ = "0.1.0"
 __all__ = [
     "FT300StreamReader",
-    "FT300Sensor", 
+    "FT300Sensor",
     "FT300DataCollector",
     "FT300DataLogger",
     "FT300Error",
-    "CRCError"
+    "CRCError",
 ]

@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
@@ -19,7 +18,9 @@ import libscrc
 from ft300s.exceptions import FT300Error, CRCError
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
@@ -73,16 +74,18 @@ class FT300MessageParser:
         # Extract force values (Fx, Fy, Fz) - divide by 100
         for i in range(3):
             offset = 2 + i * 2
-            raw_value = int.from_bytes(message[offset:offset+2],
-                                     byteorder="little", signed=True)
+            raw_value = int.from_bytes(
+                message[offset : offset + 2], byteorder="little", signed=True
+            )
             value = round(raw_value / 100.0 - zero_ref[i], 2)
             force_torque.append(value)
 
         # Extract torque values (Tx, Ty, Tz) - divide by 1000
         for i in range(3):
             offset = 8 + i * 2
-            raw_value = int.from_bytes(message[offset:offset+2],
-                                     byteorder="little", signed=True)
+            raw_value = int.from_bytes(
+                message[offset : offset + 2], byteorder="little", signed=True
+            )
             value = round(raw_value / 1000.0 - zero_ref[i + 3], 2)
             force_torque.append(value)
 
@@ -113,11 +116,11 @@ class FT300Sensor:
 
         # Serial parameters
         self.serial_params = {
-            'baudrate': self.DEFAULT_BAUDRATE,
-            'bytesize': self.DEFAULT_BYTESIZE,
-            'parity': self.DEFAULT_PARITY,
-            'stopbits': self.DEFAULT_STOPBITS,
-            'timeout': self.DEFAULT_TIMEOUT
+            "baudrate": self.DEFAULT_BAUDRATE,
+            "bytesize": self.DEFAULT_BYTESIZE,
+            "parity": self.DEFAULT_PARITY,
+            "stopbits": self.DEFAULT_STOPBITS,
+            "timeout": self.DEFAULT_TIMEOUT,
         }
 
     def stop_streaming(self) -> None:
@@ -137,11 +140,11 @@ class FT300Sensor:
         logger.info("Starting FT300 data stream...")
 
         # Configure minimalmodbus
-        mm.BAUDRATE = self.serial_params['baudrate']
-        mm.BYTESIZE = self.serial_params['bytesize']
-        mm.PARITY = self.serial_params['parity']
-        mm.STOPBITS = self.serial_params['stopbits']
-        mm.TIMEOUT = self.serial_params['timeout']
+        mm.BAUDRATE = self.serial_params["baudrate"]
+        mm.BYTESIZE = self.serial_params["bytesize"]
+        mm.PARITY = self.serial_params["parity"]
+        mm.STOPBITS = self.serial_params["stopbits"]
+        mm.TIMEOUT = self.serial_params["timeout"]
 
         # Create Modbus instrument
         instrument = mm.Instrument(self.port, slaveaddress=self.slave_address)
@@ -149,7 +152,9 @@ class FT300Sensor:
 
         try:
             # Write to streaming register to enable streaming
-            instrument.write_register(self.STREAMING_REGISTER, self.STREAMING_ENABLE_VALUE)
+            instrument.write_register(
+                self.STREAMING_REGISTER, self.STREAMING_ENABLE_VALUE
+            )
             time.sleep(0.1)  # Allow time for the command to take effect
             logger.info("Data stream started")
         except Exception as e:
@@ -233,7 +238,9 @@ class FT300DataCollector:
 class FT300StreamReader:
     """High-level interface for streaming FT300 data"""
 
-    def __init__(self, port: str, slave_address: int = FT300Sensor.DEFAULT_SLAVE_ADDRESS):
+    def __init__(
+        self, port: str, slave_address: int = FT300Sensor.DEFAULT_SLAVE_ADDRESS
+    ):
         self.sensor = FT300Sensor(port, slave_address)
         self.collector = FT300DataCollector(self.sensor)
         self._running = False
@@ -276,7 +283,7 @@ class FT300StreamReader:
         """Stop the streaming session"""
         if self._running:
             self._running = False
-            if hasattr(self, '_serial_connection'):
+            if hasattr(self, "_serial_connection"):
                 self._serial_connection.__exit__(None, None, None)
             logger.info("Stream reader stopped")
 

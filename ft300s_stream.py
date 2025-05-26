@@ -16,7 +16,9 @@ from typing import Optional
 from ft300s import FT300StreamReader, FT300Error, CRCError, FT300DataLogger
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
@@ -44,8 +46,7 @@ class FT300Application:
 
         # Create stream reader
         self.stream_reader = FT300StreamReader(
-            port=self.args.port,
-            slave_address=self.args.slave_address
+            port=self.args.port, slave_address=self.args.slave_address
         )
 
         # Create data logger
@@ -55,7 +56,7 @@ class FT300Application:
         self.data_logger = FT300DataLogger(
             csv_filename=csv_file,
             json_filename=json_file,
-            buffer_size=self.args.buffer_size
+            buffer_size=self.args.buffer_size,
         )
 
         logger.info("Application setup complete")
@@ -89,34 +90,46 @@ class FT300Application:
                         # Display data
                         if not self.args.quiet:
                             fx, fy, fz, tx, ty, tz = force_torque
-                            print(f"F: {frequency:3d}Hz | "
-                                  f"Force: [{fx:7.2f}, {fy:7.2f}, {fz:7.2f}] N | "
-                                  f"Torque: [{tx:6.3f}, {ty:6.3f}, {tz:6.3f}] Nm")
+                            print(
+                                f"F: {frequency:3d}Hz | "
+                                f"Force: [{fx:7.2f}, {fy:7.2f}, {fz:7.2f}] N | "
+                                f"Torque: [{tx:6.3f}, {ty:6.3f}, {tz:6.3f}] Nm"
+                            )
 
                         # Show statistics periodically
                         current_time = time.time()
-                        if (self.args.show_stats and
-                            current_time - last_stats_time >= self.args.stats_interval):
-
+                        if (
+                            self.args.show_stats
+                            and current_time - last_stats_time
+                            >= self.args.stats_interval
+                        ):
                             stats = self.data_logger.get_statistics()
                             if stats:
-                                logger.info(f"Statistics (last {stats['sample_count']} samples):")
-                                for axis in ['fx', 'fy', 'fz', 'tx', 'ty', 'tz']:
+                                logger.info(
+                                    f"Statistics (last {stats['sample_count']} samples):"
+                                )
+                                for axis in ["fx", "fy", "fz", "tx", "ty", "tz"]:
                                     if axis in stats:
                                         s = stats[axis]
-                                        logger.info(f"  {axis.upper()}: "
-                                                   f"mean={s['mean']}, std={s['std']}, "
-                                                   f"range=[{s['min']}, {s['max']}]")
+                                        logger.info(
+                                            f"  {axis.upper()}: "
+                                            f"mean={s['mean']}, std={s['std']}, "
+                                            f"range=[{s['min']}, {s['max']}]"
+                                        )
 
                             last_stats_time = current_time
 
                     except CRCError:
                         crc_error_count += 1
                         if crc_error_count <= self.args.max_crc_errors:
-                            logger.warning(f"CRC error #{crc_error_count}, continuing...")
+                            logger.warning(
+                                f"CRC error #{crc_error_count}, continuing..."
+                            )
                             continue
                         else:
-                            logger.error(f"Too many CRC errors ({crc_error_count}), stopping")
+                            logger.error(
+                                f"Too many CRC errors ({crc_error_count}), stopping"
+                            )
                             break
 
                     except Exception as e:
@@ -143,14 +156,18 @@ class FT300Application:
             # Show final statistics
             if self.args.show_stats:
                 stats = self.data_logger.get_statistics()
-                if stats and stats['sample_count'] > 0:
-                    logger.info(f"Final statistics ({stats['sample_count']} total samples):")
-                    for axis in ['fx', 'fy', 'fz', 'tx', 'ty', 'tz']:
+                if stats and stats["sample_count"] > 0:
+                    logger.info(
+                        f"Final statistics ({stats['sample_count']} total samples):"
+                    )
+                    for axis in ["fx", "fy", "fz", "tx", "ty", "tz"]:
                         if axis in stats:
                             s = stats[axis]
-                            logger.info(f"  {axis.upper()}: "
-                                       f"mean={s['mean']}, std={s['std']}, "
-                                       f"range=[{s['min']}, {s['max']}]")
+                            logger.info(
+                                f"  {axis.upper()}: "
+                                f"mean={s['mean']}, std={s['std']}, "
+                                f"range=[{s['min']}, {s['max']}]"
+                            )
 
             self.data_logger.close()
 
@@ -167,59 +184,50 @@ Examples:
   %(prog)s -p /dev/ttyUSB0                    # Basic streaming
   %(prog)s -p COM3 --csv-output data.csv     # Stream with CSV logging
   %(prog)s -p /dev/ttyUSB0 --show-stats      # Stream with statistics
-        """
+        """,
     )
 
     # Connection settings
     parser.add_argument(
-        "-p", "--port",
+        "-p",
+        "--port",
         default="/dev/ttyUSB0",
-        help="Serial port where FT300 is connected (default: /dev/ttyUSB0)"
+        help="Serial port where FT300 is connected (default: /dev/ttyUSB0)",
     )
 
     parser.add_argument(
         "--slave-address",
         type=int,
         default=9,
-        help="Modbus slave address of the FT300 (default: 9)"
+        help="Modbus slave address of the FT300 (default: 9)",
     )
 
     # Output settings
-    parser.add_argument(
-        "--csv-output",
-        help="Save data to CSV file"
-    )
+    parser.add_argument("--csv-output", help="Save data to CSV file")
+
+    parser.add_argument("--json-output", help="Save data to JSON file")
 
     parser.add_argument(
-        "--json-output",
-        help="Save data to JSON file"
-    )
-
-    parser.add_argument(
-        "-q", "--quiet",
-        action="store_true",
-        help="Suppress real-time data output"
+        "-q", "--quiet", action="store_true", help="Suppress real-time data output"
     )
 
     # Statistics and monitoring
     parser.add_argument(
-        "--show-stats",
-        action="store_true",
-        help="Show periodic statistics"
+        "--show-stats", action="store_true", help="Show periodic statistics"
     )
 
     parser.add_argument(
         "--stats-interval",
         type=float,
         default=10.0,
-        help="Statistics display interval in seconds (default: 10.0)"
+        help="Statistics display interval in seconds (default: 10.0)",
     )
 
     parser.add_argument(
         "--buffer-size",
         type=int,
         default=1000,
-        help="Size of the data buffer for statistics (default: 1000)"
+        help="Size of the data buffer for statistics (default: 1000)",
     )
 
     # Error handling
@@ -227,28 +235,24 @@ Examples:
         "--max-crc-errors",
         type=int,
         default=10,
-        help="Maximum consecutive CRC errors before stopping (default: 10)"
+        help="Maximum consecutive CRC errors before stopping (default: 10)",
     )
 
     parser.add_argument(
         "--continue-on-error",
         action="store_true",
-        help="Continue operation on non-critical errors"
+        help="Continue operation on non-critical errors",
     )
 
     # Calibration
     parser.add_argument(
         "--no-calibration",
         action="store_true",
-        help="Skip zero reference calibration on startup"
+        help="Skip zero reference calibration on startup",
     )
 
     # Debug
-    parser.add_argument(
-        "--debug",
-        action="store_true",
-        help="Enable debug logging"
-    )
+    parser.add_argument("--debug", action="store_true", help="Enable debug logging")
 
     return parser
 
