@@ -1,7 +1,11 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
-name = "FT300-S-stream"
+name = "ft300s-stream-py"
 version = "0.1.0"
-description = "Get measurement data from FT 300-S in stream mode using python"
+description = "FT300-S Force/Torque Sensor Streaming Application"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
