@@ -1,6 +1,7 @@
 # FT300-S Data Stream
 
-A Dockerized example to stream force/torque data from the FT300-S sensor using Python and uv.
+A Python package for streaming force/torque data from the FT300-S sensor with support for data logging and real-time monitoring.
+
 
 ## Prerequisites
 
@@ -15,9 +16,7 @@ A Dockerized example to stream force/torque data from the FT300-S sensor using P
 > to see which `/dev/tty*` device was assigned.
 
 
-## Usage
-
-Choose one of two ways to launch the stream:
+## Installation
 
 ### Method 1: Docker container
 
@@ -29,14 +28,13 @@ docker build -t uv-env .
 docker run --rm -it --device /dev/ttyUSB0:/dev/ttyUSB0 uv-env
 
 # 3. Inside container, start streaming
-uv run ft300s-stream.py -p /dev/ttyUSB0
+uv run ft300s_stream.py -p /dev/ttyUSB0
 ```
 
+### Method 2: Local uv install
 > [!NOTE]
 > **What is uv?**   
 > [uv](https://github.com/astral-sh/uv) is a fast Python package and project manager (similar to pip but faster). It automatically handles dependencies and virtual environments for you.
-
-### Method 2: Local uv install
 
 ```bash
 # 1. Install uv (system or venv)
@@ -46,28 +44,67 @@ pip install uv
 sudo chmod 666 /dev/ttyUSB0
 
 # 3. Run streaming script directly
-uv run ft300s-stream.py -p /dev/ttyUSB0
+uv run ft300s_stream.py -p /dev/ttyUSB0
 ```
 
-## Others
+## Usage
+
+### Basic streaming
+```bash
+# Run the script directly
+uv run ft300s_stream.py -p /dev/ttyUSB0
+```
+
+### With data logging
+```bash
+# Log to CSV file
+uv run ft300s_stream.py -p /dev/ttyUSB0 --csv-output sensor_data.csv
+
+# Log to JSON file  
+uv run ft300s_stream.py -p /dev/ttyUSB0 --json-output sensor_data.json
+
+```
+
+## Package Structure
+
+```
+ft300s-stream-py/
+├── src/ft300s/           # Core package
+│   ├── sensor.py         # FT300 sensor interface
+│   ├── logger.py         # Data logging utilities
+│   └── exceptions.py     # Custom exceptions
+├── ft300s_stream.py      # Main application script
+├── pyproject.toml        # Package configuration
+└── Dockerfile            # Container setup
+```
+
+## Features
+
+- **Real-time streaming** at up to 100Hz
+- **Data logging** to CSV and JSON formats
+- **Error handling** with CRC validation
+- **Graceful shutdown** with Ctrl+C
+- **Docker support** for containerized deployment
+- **Modular design** with reusable components
+
+## Sample Output
+
+```
+F: 100Hz | Force: [  -0.08,   -0.12,   -0.02] N | Torque: [-0.000,  0.000,  0.000] Nm
+F: 100Hz | Force: [  -0.02,   -0.15,    0.01] N | Torque: [-0.000,  0.000,  0.000] Nm
+F: 100Hz | Force: [   0.03,   -0.14,    0.05] N | Torque: [-0.000,  0.000,  0.000] Nm
+F: 100Hz | Force: [   0.00,   -0.07,    0.05] N | Torque: [-0.000,  0.000,  0.000] Nm
+F: 100Hz | Force: [  -0.04,   -0.04,    0.02] N | Torque: [-0.000,  0.000,  0.000] Nm
+F: 100Hz | Force: [  -0.04,   -0.04,   -0.02] N | Torque: [-0.000,  0.000,  0.000] Nm
+```
+
+## Sensor Axes
 
 <figure align="center">
   <img src="docs/axis.png" alt="Axis Diagram" width="400" />
-  <figcaption><em>Axis orientation diagram.</em></figcaption>
+  <figcaption><em>FT300-S sensor axis orientation diagram.</em></figcaption>
 </figure>
 
-
-sample output of stream data from the FT 300-S at 100Hz. 
-```
-F: 99Hz - force Vector: [-0.16, 0.02, -0.38, 0.01, 0.01, -0.0]
-F: 99Hz - force Vector: [-0.12, -0.04, -0.46, 0.01, 0.01, -0.0]
-F: 99Hz - force Vector: [-0.09, -0.04, -0.48, 0.0, 0.01, -0.0]
-F: 100Hz - force Vector: [-0.08, -0.07, -0.38, 0.01, 0.01, -0.0]
-F: 99Hz - force Vector: [-0.09, -0.08, -0.38, 0.01, 0.01, -0.0]
-F: 99Hz - force Vector: [-0.13, -0.02, -0.43, 0.01, 0.01, -0.0]
-F: 100Hz - force Vector: [-0.14, -0.01, -0.42, 0.01, 0.01, -0.0]
-F: 99Hz - force Vector: [-0.11, -0.06, -0.43, 0.01, 0.01, -0.0]
-```
 
 ## Credits
 
